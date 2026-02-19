@@ -1,15 +1,18 @@
 {
-    "name": "turtlecoin-cryptonote-util",
-    "version": "0.0.8",
+    "name": "@leocuvee/turtlecoin-cryptonote-util",
+    "version": "0.1.0",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "gypfile": true,
-    "author": {
-        "name": "LucasJones",
-        "email": "lucasjonesdev@hotmail.co.uk"
-    },
+    "author": "LucasJones <lucasjonesdev@hotmail.co.uk>",
     "contributors": [
-        "Brandon Lehmann <brandonlehmann@gmail.com>"
+        {
+            "name": "Brandon Lehmann",
+            "email": "brandonlehmann@gmail.com"
+        },
+        {
+            "name": "Leo Stehlik - not associated with any bloody crypto"
+        }
     ],
     "engines": {
         "node": ">=10"
@@ -18,13 +21,13 @@
     "license": "GPL-3.0",
     "repository": {
         "type": "git",
-        "url": "https://github.com/turtlecoin/node-cryptonote-util.git"
+        "url": "git+https://github.com/derogold/turtlecoin-cryptonote-util.git"
     },
     "scripts": {
-        "docs": "./node_modules/.bin/typedoc && touch docs/.nojekyll && git restore docs/CNAME",
-        "build-typescript": "./node_modules/.bin/tsc",
+        "docs": "typedoc && touch docs/.nojekyll && git restore docs/CNAME",
+        "build-typescript": "tsc",
         "install": "prebuild-install --download --verbose || node-gyp rebuild",
-        "test-node": "./node_modules/.bin/mocha --timeout 60000 --require ts-node/register tests/test.ts",
+        "test-node": "mocha --timeout 60000 --require ts-node/register tests/test.ts",
         "rebuild-all": "node-gyp clean && node-gyp configure && node-gyp build && npm run build-typescript",
         "test": "npm run rebuild-all && npm run test-node",
         "prepublishOnly": "npm run test"
@@ -46,5 +49,14 @@
         "ts-node": "^8.10.2",
         "typedoc": "^0.18.0",
         "typescript": "^3.9.7"
-    }
+    },
+    "description": "We build prebuilds of the Node.js native addon module binaries that are included for distribution with the NPM installed version of this package to speed up your development and use of this package.",
+    "directories": {
+        "doc": "docs",
+        "test": "tests"
+    },
+    "bugs": {
+        "url": "https://github.com/derogold/turtlecoin-cryptonote-util/issues"
+    },
+    "homepage": "https://github.com/derogold/turtlecoin-cryptonote-util#readme"
 }
