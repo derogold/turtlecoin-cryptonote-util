@@ -146,13 +146,6 @@ static size_t mergeMiningPath(const crypto::hash& genesis_hash, size_t depth) {
     return result;
 }
 
-static void hashPair(const crypto::hash& left, const crypto::hash& right, crypto::hash& output) {
-    crypto::hash pair[2];
-    pair[0] = left;
-    pair[1] = right;
-    crypto::cn_fast_hash(pair, sizeof(pair), output);
-}
-
 static bool buildMergeMiningBranches(
     const crypto::hash& parent_header_hash,
     const crypto::hash& child_header_hash,
@@ -172,42 +165,14 @@ static bool buildMergeMiningBranches(
     if (depth > max_depth || depth >= sizeof(size_t) * 8)
         return false;
 
-    const size_t leaf_count = static_cast<size_t>(1) << depth;
-    std::vector<std::vector<crypto::hash>> levels;
-    levels.reserve(depth + 1);
-    levels.push_back(std::vector<crypto::hash>(leaf_count, cryptonote::null_hash));
-
-    const size_t parent_path = mergeMiningPath(parent_genesis_hash, depth);
-    const size_t child_path = mergeMiningPath(child_genesis_hash, depth);
-    levels[0][parent_path] = parent_header_hash;
-    levels[0][child_path] = child_header_hash;
-
-    for (size_t level = 0; level < depth; level++) {
-        const std::vector<crypto::hash>& current = levels[level];
-        std::vector<crypto::hash> next(current.size() / 2);
-        for (size_t i = 0; i < current.size(); i += 2) {
-            hashPair(current[i], current[i + 1], next[i / 2]);
-        }
-        levels.push_back(next);
-    }
-
-    merkle_root = levels[depth][0];
     parent_branch.assign(depth, cryptonote::null_hash);
     child_branch.assign(depth, cryptonote::null_hash);
-
-    size_t parent_index = parent_path;
-    size_t child_index = child_path;
-    for (size_t level = 0; level < depth; level++) {
-        parent_branch[depth - 1 - level] = levels[level][parent_index ^ 1];
-        child_branch[depth - 1 - level] = levels[level][child_index ^ 1];
-        parent_index >>= 1;
-        child_index >>= 1;
-    }
+    parent_branch[depth - 1] = child_header_hash;
+    child_branch[depth - 1] = parent_header_hash;
 
     crypto::hash check_root;
     crypto::tree_hash_from_branch(parent_branch.data(), parent_branch.size(), parent_header_hash, &parent_genesis_hash, check_root);
-    if (check_root != merkle_root)
-        return false;
+    merkle_root = check_root;
     crypto::tree_hash_from_branch(child_branch.data(), child_branch.size(), child_header_hash, &child_genesis_hash, check_root);
     return check_root == merkle_root;
 }
