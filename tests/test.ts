@@ -71,8 +71,8 @@ const expected_merged_block = '0500b4318c1249164393f7b9d691e60aba81ca9bbffb9e0b2
     'e2ca2a8723ee7e5855c6af674bbd9b5a'
 
 const expected_block_id = '8e466960ef1cfffdcac94f8b0595d9edbcd54559649a1bfc934141f9ab013e9a';
-const parent_genesis_hash = Buffer.from('0000000000000000000000000000000000000000000000000000000000000000', 'hex');
-const child_genesis_hash = Buffer.from('0100000000000000000000000000000000000000000000000000000000000000', 'hex');
+const parent_genesis_hash = Buffer.from('7fb97df81221dd1366051b2d0bc7f49c66c22ac4431d879c895b06d66ef66f4c', 'hex');
+const child_genesis_hash = Buffer.from('877e55b4e902b9bf4c9e0a7c16440f449339d56679c49d62261ae5c92596a6ce', 'hex');
 const unrelated_genesis_hash = Buffer.from('0200000000000000000000000000000000000000000000000000000000000000', 'hex');
 
 describe('CryptoNote Utilities Tests', async () => {
