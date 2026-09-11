@@ -71,6 +71,9 @@ const expected_merged_block = '0500b4318c1249164393f7b9d691e60aba81ca9bbffb9e0b2
     'e2ca2a8723ee7e5855c6af674bbd9b5a'
 
 const expected_block_id = '8e466960ef1cfffdcac94f8b0595d9edbcd54559649a1bfc934141f9ab013e9a';
+const parent_genesis_hash = Buffer.from('0000000000000000000000000000000000000000000000000000000000000000', 'hex');
+const child_genesis_hash = Buffer.from('0100000000000000000000000000000000000000000000000000000000000000', 'hex');
+const unrelated_genesis_hash = Buffer.from('0200000000000000000000000000000000000000000000000000000000000000', 'hex');
 
 describe('CryptoNote Utilities Tests', async () => {
     it('Address Prefix Decoding', async () => {
@@ -143,6 +146,61 @@ describe('CryptoNote Utilities Tests', async () => {
                 '1ada5c823311905f0e30d4f4884dba13b811e837f5fa55b07af01';
 
             assert(merged.toString('hex') === expected_merged);
+        })
+    });
+
+    describe('Merged Mining Helpers', async () => {
+        it('Reports merged mining nonce reserve size', async () => {
+            const size = await CryptoNoteUtils.get_merged_mining_nonce_size();
+
+            assert(size === 35);
+        })
+
+        it('Constructs parent and child block blobs for a two-chain merge tree', async () => {
+            const parentTemplate = Buffer.from(block.blocktemplate, 'hex');
+            const childTemplate = Buffer.from(block_template_new.blocktemplate, 'hex');
+
+            const mergedParent = await CryptoNoteUtils.construct_mm_parent_block_blob(
+                parentTemplate,
+                childTemplate,
+                parent_genesis_hash,
+                child_genesis_hash
+            );
+            const parentShare = await CryptoNoteUtils.construct_block_blob(mergedParent, 0x1c64);
+            const mergedChild = await CryptoNoteUtils.construct_mm_child_block_blob(
+                parentShare,
+                childTemplate,
+                parent_genesis_hash,
+                child_genesis_hash
+            );
+
+            assert(mergedParent.length > parentTemplate.length);
+            assert(mergedChild.length > childTemplate.length);
+            assert.doesNotThrow(() => CryptoNoteUtils.convert_blob(parentShare));
+            assert.doesNotThrow(() => CryptoNoteUtils.convert_blob(mergedChild));
+            assert.doesNotThrow(() => CryptoNoteUtils.get_block_id(mergedChild));
+        })
+
+        it('Rejects a child blob when the parent merge tag was built for a different child path', async () => {
+            const parentTemplate = Buffer.from(block.blocktemplate, 'hex');
+            const childTemplate = Buffer.from(block_template_new.blocktemplate, 'hex');
+            const mergedParent = await CryptoNoteUtils.construct_mm_parent_block_blob(
+                parentTemplate,
+                childTemplate,
+                parent_genesis_hash,
+                child_genesis_hash
+            );
+            const parentShare = await CryptoNoteUtils.construct_block_blob(mergedParent, 0x1c64);
+
+            await assert.rejects(
+                CryptoNoteUtils.construct_mm_child_block_blob(
+                    parentShare,
+                    childTemplate,
+                    parent_genesis_hash,
+                    unrelated_genesis_hash
+                ),
+                /Failed to construct merged mining merkle tree|Parent block merged mining tag does not match child template/
+            );
         })
     });
 })

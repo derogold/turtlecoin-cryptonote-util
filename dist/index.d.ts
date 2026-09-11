@@ -13,6 +13,20 @@ export declare function address_decode(address: Buffer): number;
  */
 export declare function construct_block_blob(block: Buffer, nonce: Buffer | number): Buffer;
 /**
+ * Returns the extra nonce bytes needed to reserve space for a merged mining tag
+ */
+export declare function get_merged_mining_nonce_size(): number;
+/**
+ * Constructs a parent block template that commits to both parent and child
+ * auxiliary blocks through the merged mining tag.
+ */
+export declare function construct_mm_parent_block_blob(parentBlock: Buffer, childBlock: Buffer, parentGenesisHash: Buffer, childGenesisHash: Buffer): Buffer;
+/**
+ * Constructs a child block blob from a mined parent share and the original
+ * child block template.
+ */
+export declare function construct_mm_child_block_blob(parentShare: Buffer, childBlock: Buffer, parentGenesisHash: Buffer, childGenesisHash: Buffer): Buffer;
+/**
  * Converts a block into a v1 hashing block typically used by miners during
  * mining operations. This method actually creates a merged mining block
  * that merge mines itself
@@ -50,6 +64,20 @@ export default class CryptoNoteUtils {
      * @param nonce
      */
     static construct_block_blob(block: Buffer, nonce: Buffer | number): Promise<Buffer>;
+    /**
+     * Returns the extra nonce bytes needed to reserve space for a merged mining tag
+     */
+    static get_merged_mining_nonce_size(): Promise<number>;
+    /**
+     * Constructs a parent block template that commits to both parent and child
+     * auxiliary blocks through the merged mining tag.
+     */
+    static construct_mm_parent_block_blob(parentBlock: Buffer, childBlock: Buffer, parentGenesisHash: Buffer, childGenesisHash: Buffer): Promise<Buffer>;
+    /**
+     * Constructs a child block blob from a mined parent share and the original
+     * child block template.
+     */
+    static construct_mm_child_block_blob(parentShare: Buffer, childBlock: Buffer, parentGenesisHash: Buffer, childGenesisHash: Buffer): Promise<Buffer>;
     /**
      * Converts a block into a v1 hashing block typically used by miners during
      * mining operations. This method actually creates a merged mining block

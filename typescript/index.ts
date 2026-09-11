@@ -33,6 +33,39 @@ export function construct_block_blob(block: Buffer, nonce: Buffer | number): Buf
 }
 
 /**
+ * Returns the extra nonce bytes needed to reserve space for a merged mining tag
+ */
+export function get_merged_mining_nonce_size(): number {
+    return native.get_merged_mining_nonce_size();
+}
+
+/**
+ * Constructs a parent block template that commits to both parent and child
+ * auxiliary blocks through the merged mining tag.
+ */
+export function construct_mm_parent_block_blob(
+    parentBlock: Buffer,
+    childBlock: Buffer,
+    parentGenesisHash: Buffer,
+    childGenesisHash: Buffer
+): Buffer {
+    return native.construct_mm_parent_block_blob(parentBlock, childBlock, parentGenesisHash, childGenesisHash);
+}
+
+/**
+ * Constructs a child block blob from a mined parent share and the original
+ * child block template.
+ */
+export function construct_mm_child_block_blob(
+    parentShare: Buffer,
+    childBlock: Buffer,
+    parentGenesisHash: Buffer,
+    childGenesisHash: Buffer
+): Buffer {
+    return native.construct_mm_child_block_blob(parentShare, childBlock, parentGenesisHash, childGenesisHash);
+}
+
+/**
  * Converts a block into a v1 hashing block typically used by miners during
  * mining operations. This method actually creates a merged mining block
  * that merge mines itself
@@ -85,6 +118,39 @@ export default class CryptoNoteUtils {
      */
     public static async construct_block_blob(block: Buffer, nonce: Buffer | number): Promise<Buffer> {
         return construct_block_blob(block, nonce);
+    }
+
+    /**
+     * Returns the extra nonce bytes needed to reserve space for a merged mining tag
+     */
+    public static async get_merged_mining_nonce_size(): Promise<number> {
+        return get_merged_mining_nonce_size();
+    }
+
+    /**
+     * Constructs a parent block template that commits to both parent and child
+     * auxiliary blocks through the merged mining tag.
+     */
+    public static async construct_mm_parent_block_blob(
+        parentBlock: Buffer,
+        childBlock: Buffer,
+        parentGenesisHash: Buffer,
+        childGenesisHash: Buffer
+    ): Promise<Buffer> {
+        return construct_mm_parent_block_blob(parentBlock, childBlock, parentGenesisHash, childGenesisHash);
+    }
+
+    /**
+     * Constructs a child block blob from a mined parent share and the original
+     * child block template.
+     */
+    public static async construct_mm_child_block_blob(
+        parentShare: Buffer,
+        childBlock: Buffer,
+        parentGenesisHash: Buffer,
+        childGenesisHash: Buffer
+    ): Promise<Buffer> {
+        return construct_mm_child_block_blob(parentShare, childBlock, parentGenesisHash, childGenesisHash);
     }
 
     /**

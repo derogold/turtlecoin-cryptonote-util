@@ -12,7 +12,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.get_block_id = exports.convert_blob_bb = exports.convert_blob = exports.construct_block_blob = exports.address_decode = void 0;
+exports.get_block_id = exports.convert_blob_bb = exports.convert_blob = exports.construct_mm_child_block_blob = exports.construct_mm_parent_block_blob = exports.get_merged_mining_nonce_size = exports.construct_block_blob = exports.address_decode = void 0;
 /** @ignore */
 const native = require('bindings')('cryptonote.node');
 /**
@@ -39,6 +39,29 @@ function construct_block_blob(block, nonce) {
     return native.construct_block_blob(block, nonce);
 }
 exports.construct_block_blob = construct_block_blob;
+/**
+ * Returns the extra nonce bytes needed to reserve space for a merged mining tag
+ */
+function get_merged_mining_nonce_size() {
+    return native.get_merged_mining_nonce_size();
+}
+exports.get_merged_mining_nonce_size = get_merged_mining_nonce_size;
+/**
+ * Constructs a parent block template that commits to both parent and child
+ * auxiliary blocks through the merged mining tag.
+ */
+function construct_mm_parent_block_blob(parentBlock, childBlock, parentGenesisHash, childGenesisHash) {
+    return native.construct_mm_parent_block_blob(parentBlock, childBlock, parentGenesisHash, childGenesisHash);
+}
+exports.construct_mm_parent_block_blob = construct_mm_parent_block_blob;
+/**
+ * Constructs a child block blob from a mined parent share and the original
+ * child block template.
+ */
+function construct_mm_child_block_blob(parentShare, childBlock, parentGenesisHash, childGenesisHash) {
+    return native.construct_mm_child_block_blob(parentShare, childBlock, parentGenesisHash, childGenesisHash);
+}
+exports.construct_mm_child_block_blob = construct_mm_child_block_blob;
 /**
  * Converts a block into a v1 hashing block typically used by miners during
  * mining operations. This method actually creates a merged mining block
@@ -93,6 +116,32 @@ class CryptoNoteUtils {
     static construct_block_blob(block, nonce) {
         return __awaiter(this, void 0, void 0, function* () {
             return construct_block_blob(block, nonce);
+        });
+    }
+    /**
+     * Returns the extra nonce bytes needed to reserve space for a merged mining tag
+     */
+    static get_merged_mining_nonce_size() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return get_merged_mining_nonce_size();
+        });
+    }
+    /**
+     * Constructs a parent block template that commits to both parent and child
+     * auxiliary blocks through the merged mining tag.
+     */
+    static construct_mm_parent_block_blob(parentBlock, childBlock, parentGenesisHash, childGenesisHash) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return construct_mm_parent_block_blob(parentBlock, childBlock, parentGenesisHash, childGenesisHash);
+        });
+    }
+    /**
+     * Constructs a child block blob from a mined parent share and the original
+     * child block template.
+     */
+    static construct_mm_child_block_blob(parentShare, childBlock, parentGenesisHash, childGenesisHash) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return construct_mm_child_block_blob(parentShare, childBlock, parentGenesisHash, childGenesisHash);
         });
     }
     /**

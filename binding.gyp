@@ -32,7 +32,7 @@
         "-fno-rtti"
       ],
       "cflags_cc": [
-        "-std=c++14",
+        "-std=c++17",
         "-fexceptions",
         "-frtti"
       ],
