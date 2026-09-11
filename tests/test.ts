@@ -167,6 +167,7 @@ describe('CryptoNote Utilities Tests', async () => {
                 child_genesis_hash
             );
             const parentShare = await CryptoNoteUtils.construct_block_blob(mergedParent, 0x1c64);
+            const unmergedParentShare = await CryptoNoteUtils.construct_block_blob(parentTemplate, 0x1c64);
             const mergedChild = await CryptoNoteUtils.construct_mm_child_block_blob(
                 parentShare,
                 childTemplate,
@@ -176,7 +177,10 @@ describe('CryptoNote Utilities Tests', async () => {
 
             assert(mergedParent.length > parentTemplate.length);
             assert(mergedChild.length > childTemplate.length);
-            assert.doesNotThrow(() => CryptoNoteUtils.convert_blob(parentShare));
+            assert.notDeepStrictEqual(
+                await CryptoNoteUtils.convert_blob(parentShare),
+                await CryptoNoteUtils.convert_blob(unmergedParentShare)
+            );
             assert.doesNotThrow(() => CryptoNoteUtils.convert_blob(mergedChild));
             assert.doesNotThrow(() => CryptoNoteUtils.get_block_id(mergedChild));
         })

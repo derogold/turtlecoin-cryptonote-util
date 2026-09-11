@@ -234,12 +234,18 @@ NAN_METHOD(convert_blob) {
         if (!get_block_hashing_blob(b, output))
             return THROW_ERROR_EXCEPTION("Failed to create mining block");
     } else {
-        block parent_block;
-        if (!construct_parent_block(b, parent_block))
-            return THROW_ERROR_EXCEPTION("Failed to construct parent block");
+        cryptonote::tx_extra_merge_mining_tag existing_mm_tag;
+        if (cryptonote::get_mm_tag_from_extra(b.parent_block.miner_tx.extra, existing_mm_tag) && existing_mm_tag.depth > 0) {
+            if (!get_bytecoin_block_hashing_blob(b, output))
+                return THROW_ERROR_EXCEPTION("Failed to create merged mining block");
+        } else {
+            block parent_block;
+            if (!construct_parent_block(b, parent_block))
+                return THROW_ERROR_EXCEPTION("Failed to construct parent block");
 
-        if (!get_block_hashing_blob(parent_block, output))
-            return THROW_ERROR_EXCEPTION("Failed to create mining block");
+            if (!get_block_hashing_blob(parent_block, output))
+                return THROW_ERROR_EXCEPTION("Failed to create mining block");
+        }
     }
 
     v8::Local<v8::Value> returnValue = Nan::CopyBuffer((char*)output.data(), output.size()).ToLocalChecked();
